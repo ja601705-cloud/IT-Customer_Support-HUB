@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IT Customer Support Hub</title>
+<style>
+:root { 
+  --blue:#2855D9;
+  --blue-dark:#1E40AF;
+  --blue-light:#EEF3FF;
+  --green:#168566;
+  --green-light:#D5F0E3;
+  --bg:#EAF5EF;
+  --white:#fff;
+  --text:#17243B;
+  --muted:#66758A;
+  --border:#D8E7DF;
+  --red:#C2414B;
+  --amber:#A96D12;
+  --radius:16px;
+}
+* {box-sizing:border-box}
+body {
+  margin:0;
+  font-family:Inter,"Segoe UI",Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  font-size:14px;
+}
+button,input,select,textarea {font:inherit}
+button {cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible {
+  outline:3px solid #93C5FD;
+  outline-offset:2px;
+}
+.intro-screen {
+  position:fixed;inset:0;z-index:9999;
+  display:flex;align-items:center;justify-content:center;
+  text-align:center;color:white;padding:24px;
+  background:linear-gradient(135deg,#0c3c9c,#7d9bc7e9 52%,#2855D9);
+  transition:opacity .65s ease,visibility .65s ease;
+}
+.intro-screen.is-hidden {opacity:0;visibility:hidden;pointer-events:none}
+.intro-content {max-width:700px;animation:appear .8s ease both}
+.intro-logo {
+  display:grid;place-items:center;margin:0 auto 24px;
+  width:82px;height:82px;border-radius:24px;
+  background:#ffffff22;border:1px solid #ffffff45;
+  font-size:37px;font-weight:800;
+}
+.intro-eyebrow {font-size:11px;letter-spacing:3px;color:#B8F5D8;font-weight:800}
+.intro-content h1 {font-size:clamp(28px,5vw,48px);margin:14px 0}
+.intro-subtitle {color:#ffffffd9;line-height:1.8}
+.intro-loader {height:4px;width:160px;margin:30px auto 14px;background:#ffffff40;border-radius:9px;overflow:hidden}
+.intro-loader span {display:block;height:100%;background:white;animation:loading 2.2s ease forwards}
+.intro-loading-text {font-size:12px;color:#ffffffbd}
+@keyframes appear {from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes loading {from{width:0}to{width:100%}}
+.app {min-height:100vh}
+.sidebar {
+  position:fixed;inset:0 auto 0 0;width:250px;
+  padding:24px 15px;background:linear-gradient(180deg,var(--blue),var(--blue-dark));
+  color:white;display:flex;flex-direction:column;z-index:10;overflow-y:auto;
+}
+.brand {display:flex;align-items:center;gap:11px;padding:0 8px 25px}
+.brand-icon {display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:#ffffff20;font-size:22px}
+.brand strong {font-size:15px;line-height:1.4}
+.brand small {display:block;color:#ffffffb8;font-size:11px;margin-top:3px}
+.nav-label {font-size:10px;letter-spacing:1.5px;color:#ffffffa8;padding:13px 12px 8px}
+.nav-link {
+  display:flex;align-items:center;gap:12px;width:100%;border:0;
+  padding:11px 12px;margin:2px 0;border-radius:10px;
+  color:#ffffffd9;background:transparent;text-align:left;font-size:13px;
+}
+.nav-link .nav-icon {width:22px;text-align:center;font-size:17px}
+.nav-link:hover,.nav-link.active {background:#ffffff20;color:white}
+.sidebar-note {margin-top:auto;padding:14px 10px 0;color:#ffffffa8;font-size:11px;line-height:1.7}
+.main {margin-left:250px;padding:28px;max-width:1800px}
+.topbar {display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:25px}
+.eyebrow {color:var(--green);font-weight:800;font-size:10px;letter-spacing:1.7px;text-transform:uppercase}
+h1,h2,h3,p {margin-top:0}
+.topbar h1 {font-size:clamp(22px,3vw,29px);margin:5px 0;font-weight:800;letter-spacing:-.6px}
+.topbar p {margin:0;color:var(--muted);font-size:13px}
+.primary,.secondary,.danger {
+  border:0;border-radius:10px;padding:10px 15px;font-weight:700;
+}
+.primary {background:var(--blue);color:white}
+.primary:hover {background:var(--blue-dark)}
+.secondary {background:var(--blue-light);color:var(--blue)}
+.danger {background:#FFF0F1;color:var(--red)}
+.cards {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-bottom:22px}
+.stat-card,.panel,.section-card {
+  background:var(--white);border:1px solid var(--border);border-radius:var(--radius);
+  box-shadow:0 4px 18px #164e6308;
+}
+.stat-card {padding:19px;min-width:0}
+.stat-card.clickable,.chart-row.dash-link {cursor:pointer;transition:background .2s,border-color .2s,transform .2s,box-shadow .2s}
+.stat-card.clickable:hover,.stat-card.clickable:focus-visible {
+  border-color:var(--green);background:var(--green-light);transform:translateY(-3px);
+  box-shadow:0 10px 24px #16856626;outline:none;
+}
+.stat-card.clickable:hover .stat-icon,.stat-card.clickable:focus-visible .stat-icon {background:white}
+.stat-card.clickable:hover .stat-label,.stat-card.clickable:hover .stat-foot {color:#116149}
+.chart-row.dash-link {padding:6px 8px;margin:6px -8px;border-radius:10px}
+.chart-row.dash-link:hover {background:var(--green-light)}
+.chart-row.dash-link:hover span {color:#116149;font-weight:700}
+.stat-top {display:flex;justify-content:space-between;gap:8px;align-items:center}
+.stat-icon {width:43px;height:43px;display:grid;place-items:center;border-radius:13px;font-size:21px}
+.stat-icon.blue {background:var(--blue-light)}
+.stat-icon.green {background:var(--green-light)}
+.stat-icon.amber {background:#FFF5E2}
+.stat-icon.red {background:#FFF0F1}
+.stat-label {font-size:12px;color:var(--muted);font-weight:600}
+.stat-value {font-size:30px;font-weight:800;margin-top:14px;line-height:1.2}
+.stat-foot {font-size:11px;color:var(--muted);margin-top:7px}
+.overview-grid {display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:22px}
+.panel {padding:20px;min-width:0}
+.panel h3 {font-size:15px;margin-bottom:5px}
+.panel-subtitle {font-size:12px;color:var(--muted);margin-bottom:20px}
+.chart-row {display:grid;grid-template-columns:100px 1fr 28px;gap:10px;align-items:center;margin:14px 0;font-size:12px}
+.bar-track {height:9px;background:#EEF2F7;border-radius:20px;overflow:hidden}
+.bar-fill {height:100%;width:0;background:var(--blue);border-radius:20px;transition:width .3s}
+.status-dot {display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;background:var(--green)}
+.status-dot.follow-up {background:#D69E2E}
+.status-dot.pending {background:#AAB5C4}
+.section-card {overflow:hidden}
+.section-heading {padding:21px 22px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+.section-heading h2 {font-size:21px;margin:5px 0}
+.section-heading p {margin:0;color:var(--muted);font-size:12px;line-height:1.6}
+.section-body {padding:20px}
+.section-tools {display:flex;flex-wrap:wrap;gap:10px;margin-bottom:17px}
+.section-tools input,.section-tools select,.field input,.field select,.field textarea {
+  width:100%;border:1px solid var(--border);border-radius:9px;padding:10px 12px;
+  color:var(--text);background:white;min-width:0;
+}
+.section-tools input {flex:1;min-width:170px}
+.section-tools select {width:auto;min-width:145px}
+.table-wrap {overflow-x:auto;border:1px solid var(--border);border-radius:12px}
+table {border-collapse:collapse;width:100%;min-width:720px;text-align:left}
+thead {background:#F4F8F6}
+th,td {padding:13px 14px;border-bottom:1px solid #E8EFEA;vertical-align:top}
+th {font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#617087;white-space:nowrap}
+td {font-size:12px;overflow-wrap:anywhere}
+tbody tr:last-child td {border-bottom:0}
+tbody tr:hover {background:#FAFCFB}
+.badge {display:inline-block;padding:5px 8px;border-radius:20px;font-size:10px;font-weight:800;white-space:nowrap}
+.badge.verified {background:#D5F0E3;color:#116149}
+.badge.follow-up {background:#FFF2D8;color:#8A5A08}
+.badge.pending {background:#EDF1F5;color:#526174}
+.actions {display:flex;gap:6px;white-space:nowrap}
+.action-btn {border:1px solid var(--border);border-radius:7px;padding:6px 8px;background:white;color:var(--blue);font-size:11px}
+.action-btn.delete {color:var(--red)}
+.empty {padding:35px 15px;text-align:center;color:var(--muted)}
+.empty strong {display:block;color:var(--text);margin-bottom:6px}
+.result-count {font-size:11px;color:var(--muted);margin-top:12px}
+.footer {padding:20px 0;text-align:center;color:var(--muted);font-size:11px}
+.modal-backdrop {position:fixed;inset:0;background:#0F172A80;z-index:1000;display:none;align-items:center;justify-content:center;padding:16px}
+.modal-backdrop.open {display:flex}
+.modal {width:min(620px,100%);max-height:90vh;overflow-y:auto;background:white;border-radius:18px;padding:24px;box-shadow:0 20px 70px #0003}
+.modal-header {display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:20px}
+.modal-header h2 {font-size:21px;margin:0}
+.close-btn {border:0;background:#F1F5F9;border-radius:8px;padding:7px 11px}
+.form-grid {display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.field {min-width:0}
+.field.full {grid-column:1/-1}
+.field label {display:block;font-size:12px;font-weight:700;margin-bottom:6px}
+.field textarea {min-height:85px;resize:vertical}
+.modal-actions {display:flex;justify-content:flex-end;gap:9px;margin-top:22px}
+.notice {font-size:11px;color:var(--muted);line-height:1.6;margin-top:12px}
+[hidden] {display:none!important}
+@media(max-width:1050px) {
+  .sidebar {width:215px}
+  .main {margin-left:215px;padding:22px}
+  .cards {grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:720px) {
+  .sidebar {position:relative;width:100%;height:auto;inset:auto;padding:15px}
+  .brand {padding-bottom:12px}
+  .nav-label,.sidebar-note {display:none}
+  .sidebar nav {display:flex;gap:5px;overflow-x:auto;padding-bottom:3px}
+  .nav-link {width:auto;min-width:max-content;padding:9px 11px}
+  .nav-link .nav-icon {width:auto}
+  .main {margin-left:0;padding:16px}
+  .topbar {align-items:flex-start;flex-direction:column}
+  .overview-grid {grid-template-columns:1fr}
+  .cards {gap:10px}
+  .stat-card {padding:13px}
+  .stat-value {font-size:25px}
+  .section-heading {padding:17px;flex-direction:column}
+  .section-body {padding:12px}
+  .form-grid {grid-template-columns:1fr}
+  .field.full {grid-column:auto}
+}
+@media(prefers-reduced-motion:reduce) {
+  *,*::before,*::after {animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+/* Uploaded Files - Documentation Status */
+.uploaded-files-panel {
+  margin-top: 22px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #FAFCFB;
+}
+
+.uploaded-files-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.uploaded-files-heading h3 {
+  margin: 0 0 5px;
+  font-size: 15px;
+}
+
+.uploaded-files-heading p,
+.upload-status {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.uploaded-files-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 12px;
+}
+
+.uploaded-file {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 14px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.uploaded-file-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 11px;
+  background: var(--blue-light);
+  color: var(--blue);
+  font-size: 21px;
+}
+
+.uploaded-file-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.uploaded-file-name {
+  display: block;
+  width: 100%;
+  overflow-wrap: anywhere;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--blue);
+  text-align: left;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.uploaded-file-name:hover {
+  text-decoration: underline;
+}
+
+.uploaded-file-meta {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.upload-status {
+  margin-top: 12px;
+}
+
+.uploaded-files-empty {
+  grid-column: 1 / -1;
+  padding: 22px;
+  text-align: center;
+  color: var(--muted);
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  background: white;
+} 
+
+/* File Upload - Drag and Drop */
+.dropzone {
+  border: 2px dashed #B8C9F5;
+  border-radius: 14px;
+  padding: 30px 20px;
+  text-align: center;
+  background: #F7F9FF;
+  transition: background .2s, border-color .2s;
+}
+
+.dropzone.drag-over {
+  background: #EEF3FF;
+  border-color: var(--blue);
+}
+
+.dropzone-icon {
+  font-size: 36px;
+  color: var(--blue);
+  margin-bottom: 10px;
+}
+
+.dropzone h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  color: var(--text);
+}
+
+.dropzone p {
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+</style>
+</body>
+<div id="introScreen" class="intro-screen" role="status" aria-live="polite">
+  <div class="intro-content">
+    <img class="intro-logo" src="company-logo.png" alt="IKK Logo">
+    <p class="intro-eyebrow">INFORMATION MANAGEMENT</p>
+    <h1>IT Customer Support Hub</h1>
+    <p class="intro-subtitle">Your central dashboard for company IT information</p>
+    <div class="intro-loader"><span></span></div>
+    <p class="intro-loading-text">Preparing your dashboard...</p>
+  </div>
+</div>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-icon">▦</div>
+      <div><strong>IT Customer Support<br>Hub</strong><small>Information Dashboard</small></div>
+    </div>
+    <div class="nav-label">WORKSPACE</div>
+    <nav id="mainNav">
+      <button class="nav-link active" data-target="dashboard"><span class="nav-icon">⌂</span>Dashboard</button>
+      <button class="nav-link" data-target="companies"><span class="nav-icon">▦</span>Company Directory</button>
+      <button class="nav-link" data-target="user-types"><span class="nav-icon">♙</span>User Types</button>
+      <button class="nav-link" data-target="email-domains"><span class="nav-icon">✉</span>Email &amp; Domains</button>
+      <button class="nav-link" data-target="licenses"><span class="nav-icon">⚿</span>Microsoft Licenses</button>
+      <button class="nav-link" data-target="applications"><span class="nav-icon">▧</span>Applications &amp; Systems</button>
+      <button class="nav-link" data-target="access"><span class="nav-icon">♢</span>Access Requirements</button>
+      <button class="nav-link" data-target="documentation"><span class="nav-icon">▤</span>Documentation Status</button>
+    </nav>
+    <div class="sidebar-note">IT Customer Support Hub<br>Local workspace · Private to this browser</div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">IT OPERATIONS / OVERVIEW</div>
+        <h1 id="pageTitle">IT Customer Support Hub</h1>
+        <p>Manage IT customer support information in one organized workspace.</p>
+      </div>
+     
+
+  </header>
+
+    <section id="dashboard">
+      <div class="cards">
+        <article class="stat-card">
+          <div class="stat-top"><span class="stat-label">Supported Companies</span><span class="stat-icon blue">▦</span></div>
+          <div class="stat-value" id="totalCount">0</div><div class="stat-foot">Company directory records</div>
+        </article>
+        <article class="stat-card">
+          <div class="stat-top"><span class="stat-label">User Types</span><span class="stat-icon green">♙</span></div>
+          <div class="stat-value" id="activeCount">0</div><div class="stat-foot">Recorded user types</div>
+        </article>
+        <article class="stat-card">
+          <div class="stat-top"><span class="stat-label">Microsoft Licenses</span><span class="stat-icon blue">⚿</span></div>
+          <div class="stat-value" id="soonCount">0</div><div class="stat-foot">License records</div>
+        </article>
+        <article class="stat-card">
+          <div class="stat-top"><span class="stat-label">Pending Verification</span><span class="stat-icon amber">☑</span></div>
+          <div class="stat-value" id="expiredCount">0</div><div class="stat-foot">Records requiring review</div>
+        </article>
+      </div>
+
+      <div class="overview-grid">
+        <article class="panel">
+          <h3>Documentation Status</h3>
+          <p class="panel-subtitle">Verification progress across all records</p>
+          <div id="statusChart"></div>
+        </article>
+        <article class="panel">
+          <h3>Records by Section</h3>
+          <p class="panel-subtitle">Number of records stored in each section</p>
+          <div id="departmentChart"></div>
+        </article>
+      </div>
+
+      <article class="panel">
+        <h3>Getting Started</h3>
+        <p class="panel-subtitle">Choose a section from the left menu to organize its information.</p>
+        <p style="line-height:1.9;margin-bottom:0;color:#526174">
+          Use <strong>Add Record</strong> to enter a company or IT requirement. Mark records as
+          <strong>Verified</strong>, <strong>Follow-up</strong>, or <strong>Pending</strong>.
+          Export a section to CSV whenever you need a copy of its records.
+        </p>
+      </article>
+    </section>
+
+    <section id="sectionView" hidden>
+      <article class="section-card">
+        <div class="section-heading">
+          <div><div class="eyebrow">RECORD MANAGEMENT</div><h2 id="sectionTitle"></h2><p id="sectionDescription"></p></div>
+          <button class="primary" id="sectionAdd">＋ Add Record</button>
+        </div>
+        <div class="section-body">
+          <div class="section-tools">
+            <input id="searchInput" type="search" placeholder="Search records..." aria-label="Search records">
+            <select id="statusFilter" aria-label="Filter by status">
+              <option value="">All statuses</option>
+              <option value="Verified">Verified</option>
+              <option value="Follow-up">Follow-up</option>
+              <option value="Pending">Pending</option>
+            </select>
+            <button class="secondary" id="exportBtn">Export CSV</button>
+           
+          </div>
+
+            <table>
+              <thead id="tableHead"></thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+            <div id="emptyState" class="empty" hidden><strong>No records found</strong>Add a record or change your search and filters.</div>
+          </div>
+          <div class="result-count" id="resultCount"></div>
+
+<section id="uploadedFilesPanel" class="uploaded-files-panel" hidden>
+  <div class="uploaded-files-heading">
+    <div>
+      <h3>Uploaded Documents</h3>
+      <p>Your uploaded files, organized in one place.</p>
+    </div>
+    <span id="uploadCount" class="badge pending">0 files</span>
+  </div>
+
+  <div id="dropzone" class="dropzone">
+    <div class="dropzone-icon">⇧</div>
+    <h3>Drag and drop your files here</h3>
+    <p>Or choose files from your device.</p>
+
+    <button type="button" class="primary" id="chooseUploadBtn">
+      Choose Files
+    </button>
+
+    <input
+      type="file"
+      id="fileInput"
+      multiple
+      hidden
+    >
+  </div>
+
+  <div id="documentUploadedList" class="uploaded-files-list">
+    <div class="uploaded-files-empty">
+      No files selected yet.
+    </div>
+  </div>
+
+  <p id="documentUploadStatus" class="upload-status" aria-live="polite">
+    Selected files are available during this page session only.
+  </p>
+</section>
+
+
+
+        </div>
+
+
+
+      </article>
+    </section>
+    <footer class="footer">IT Customer Support Hub · <span id="currentYear"></span></footer>
+  </main>
+</div>
+
+<div class="modal-backdrop" id="recordModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <div class="modal-header"><h2 id="modalTitle">Add Record</h2><button type="button" class="close-btn" id="closeModal">✕</button></div>
+    <form id="recordForm">
+      <div class="form-grid" id="formFields"></div>
+      <div class="notice">Enter only information you are authorized to document. Records are saved in this browser, not sent to a company system.</div>
+      <div class="modal-actions"><button type="button" class="secondary" id="cancelModal">Cancel</button><button type="submit" class="primary">Save Record</button></div>
+    </form>
+  </div>
+</div>
+
+<div id="toast" role="status" style="position:fixed;bottom:20px;right:20px;background:#17243B;color:white;padding:12px 18px;border-radius:10px;display:none;z-index:2000;max-width:calc(100vw - 40px)"></div>
+<button id="themeToggle"
+  class="theme-toggle"
+  type="button"
+  aria-label="Switch to dark mode"
+  title="Dark Mode"
+>🌙</button>
+<script>
+(() => {document.getElementById("currentYear").textContent = new Date().getFullYear();
+  "use strict";
+
+  const STORAGE_KEY = "company-it-requirements-records-v1";
+  const categories = {
+    "companies": {
+      title:"Company Directory",
+      description:"Company names, departments, contacts, and verification details.",
+      fields:[["name","Company Name"],["department","Department"],["contact","Contact Person"],["email","Contact Email"],["notes","Notes"]]
+    },
+    "user-types": {
+      title:"User Types",
+      description:"User categories, roles, and their IT support needs.",
+      fields:[["name","User Type"],["role","Role / Description"],["department","Department"],["requirements","IT Requirements"],["notes","Notes"]]
+    },
+    "email-domains": {
+      title:"Email & Domains",
+      description:"Email domains, ownership details, and related notes.",
+      fields:[["domain","Domain"],["email","Email Address / Pattern"],["provider","Email Provider"],["owner","Responsible Team / Owner"],["notes","Notes"]]
+    },
+    "licenses": {
+  title: "Microsoft Licenses",
+  description: "Microsoft license types used by supported companies.",
+  fields: [
+    
+  ["name", "License Name"],
+    ["assignedTo", "Assigned To / User Type"],
+    ["notes", "Notes"]
+  ]
+},
+    "applications": {
+      title:"Applications & Systems",
+      description:"Business applications, system owners, and requirements.",
+      fields:[["name","Application / System"],["purpose","Purpose"],["owner","System Owner"],["url","Website / URL"],["requirements","Requirements"],["notes","Notes"]]
+    },
+    "access": {
+      title:"Access Requirements",
+      description:"Documented access roles, approvals, and dependencies.",
+      fields:[["name","System / Resource"],["role","Access Role"],["approval","Approval Required"],["owner","Approver / Owner"],["requirements","Requirements"],["notes","Notes"]]
+    },
+    "documentation": {
+      title:"Documentation Status",
+      description:"Track required documentation and verification progress.",
+      fields:[["name","Document / Requirement"],["owner","Responsible Person / Team"],["source","Source / Reference"],["dueDate","Due Date"],["notes","Notes"]]
+    }
+  };
+
+  let records = loadRecords();
+  let currentSection = "companies";
+  let editingId = null;
+  let toastTimer;
+
+  function loadRecords() {
+    try {
+      const value = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+      return Array.isArray(value) ? value : [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function saveRecords() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+      return true;
+    } catch (error) {
+      showToast("Could not save data. Check browser storage settings.");
+      return false;
+    }
+  }
+
+  function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[char]));
+  }
+
+  function getSectionRecords(section) {
+    return records.filter(record => record.category === section);
+  }
+  
+
+  function showToast(message) {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.style.display = "block";
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { toast.style.display = "none"; }, 2800);
+  }
+
+  function statusBadge(status) {
+    const css = status === "Verified" ? "verified" : status === "Follow-up" ? "follow-up" : "pending";
+    return `<span class="badge ${css}">${escapeHTML(status || "Pending")}</span>`;
+  }
+
+  function updateDashboard() {
+    document.getElementById("totalCount").textContent = getSectionRecords("companies").length;
+    document.getElementById("activeCount").textContent = getSectionRecords("user-types").length;
+    document.getElementById("soonCount").textContent = getSectionRecords("licenses").length;
+    document.getElementById("expiredCount").textContent = records.filter(r => r.status !== "Verified").length;
+
+    const statusTypes = [
+      {name:"Verified", color:"#168566"},
+      {name:"Follow-up", color:"#D69E2E"},
+      {name:"Pending", color:"#AAB5C4"}
+    ];
+    const statusCounts = statusTypes.map(s => ({
+      ...s, count:records.filter(r => (r.status || "Pending") === s.name).length
+    }));
+    const total = Math.max(records.length, 1);
+    document.getElementById("statusChart").innerHTML = statusCounts.map(s => `
+      <div class="chart-row">
+        <span><i class="status-dot ${s.name === "Follow-up" ? "follow-up" : s.name === "Pending" ? "pending" : ""}"></i>${s.name}</span>
+        <div class="bar-track"><div class="bar-fill" style="background:${s.color};width:${s.count / total * 100}%"></div></div>
+        <strong>${s.count}</strong>
+      </div>`).join("");
+
+    document.getElementById("departmentChart").innerHTML = Object.entries(categories).map(([key, section]) => {
+      const count = getSectionRecords(key).length;
+      return `<div class="chart-row dash-link" data-open="${key}" role="button" tabindex="0"><span>${escapeHTML(section.title)}</span>
+        <div class="bar-track"><div class="bar-fill" style="width:${count / Math.max(records.length,1) * 100}%"></div></div>
+        <strong>${count}</strong></div>`;
+    }).join("");
+  }
+
+  function showDashboard() {
+    document.getElementById("dashboard").hidden = false;
+    document.getElementById("sectionView").hidden = true;
+    document.getElementById("pageTitle").textContent = "IT Customer Support Hub Dashboard";
+    document.querySelectorAll(".nav-link").forEach(btn => btn.classList.toggle("active", btn.dataset.target === "dashboard"));
+    updateDashboard();
+  }
+
+  function openSection(section) {
+    if (!categories[section]) return;
+    currentSection = section;
+    document.getElementById("uploadedFilesPanel").hidden =
+  section !== "documentation";
+    document.getElementById("dashboard").hidden = true;
+    document.getElementById("sectionView").hidden = false;
+    document.getElementById("pageTitle").textContent = categories[section].title;
+    document.getElementById("sectionTitle").textContent = categories[section].title;
+    document.getElementById("sectionDescription").textContent = categories[section].description;
+    document.querySelectorAll(".nav-link").forEach(btn => btn.classList.toggle("active", btn.dataset.target === section));
+    document.getElementById("searchInput").value = "";
+    document.getElementById("statusFilter").value = "";
+    renderTable();
+  }
+
+  function renderTable() {
+    const config = categories[currentSection];
+    const fields = config.fields;
+    document.getElementById("tableHead").innerHTML =
+      `<tr>${fields.map(f => `<th>${escapeHTML(f[1])}</th>`).join("")}<th>Status</th><th>Actions</th></tr>`;
+
+    const query = document.getElementById("searchInput").value.trim().toLowerCase();
+    const status = document.getElementById("statusFilter").value;
+    const filtered = getSectionRecords(currentSection).filter(record => {
+      const matchesText = fields.some(([key]) => String(record[key] ?? "").toLowerCase().includes(query));
+      const matchesStatus = !status || record.status === status;
+      return matchesText && matchesStatus;
+    });
+
+    document.getElementById("tableBody").innerHTML = filtered.map(record => `
+      <tr>
+        ${fields.map(([key]) => `<td>${key === "url" && record[key] ? `<a href="${escapeHTML(safeURL(record[key]))}" target="_blank" rel="noopener noreferrer">${escapeHTML(record[key])}</a>` : escapeHTML(record[key] || "—")}</td>`).join("")}
+        <td>${statusBadge(record.status)}</td>
+        <td><div class="actions">
+          <button class="action-btn" data-action="edit" data-id="${escapeHTML(record.id)}">Edit</button>
+          <button class="action-btn delete" data-action="delete" data-id="${escapeHTML(record.id)}">Delete</button>
+        </div></td>
+      </tr>`).join("");
+
+    document.getElementById("emptyState").hidden = filtered.length !== 0;
+    document.getElementById("resultCount").textContent = `${filtered.length} record${filtered.length === 1 ? "" : "s"} shown`;
+    updateDashboard();
+  }
+
+  function safeURL(value) {
+    try {
+      const url = new URL(value);
+      return ["http:", "https:"].includes(url.protocol) ? url.href : "#";
+    } catch (error) {
+      return "#";
+    }
+  }
+
+  function openModal(id = null) {
+    editingId = id;
+    const record = id ? records.find(r => r.id === id) : null;
+    const config = categories[currentSection];
+    document.getElementById("modalTitle").textContent = record ? "Edit Record" : "Add Record";
+
+    const categoryOptions = Object.entries(categories).map(([key, item]) =>
+      `<option value="${key}" ${key === currentSection ? "selected" : ""}>${escapeHTML(item.title)}</option>`
+    ).join("");
+
+    document.getElementById("formFields").innerHTML = `
+      <div class="field full"><label for="recordCategory">Section</label>
+        <select id="recordCategory" ${record ? "disabled" : ""}>${categoryOptions}</select>
+      </div>
+      <div id="dynamicFields" class="form-grid field full" style="padding:0"></div>
+      <div class="field full"><label for="recordStatus">Verification Status</label>
+        <select id="recordStatus">
+          <option ${!record || record.status === "Pending" ? "selected" : ""}>Pending</option>
+          <option ${record?.status === "Follow-up" ? "selected" : ""}>Follow-up</option>
+          <option ${record?.status === "Verified" ? "selected" : ""}>Verified</option>
+        </select>
+      </div>`;
+
+    function drawFields(section) {
+      const fields = categories[section].fields;
+      document.getElementById("dynamicFields").innerHTML = fields.map(([key, label]) => {
+        const value = record?.[key] || "";
+        const full = ["notes","requirements","purpose"].includes(key) ? "full" : "";
+        const input = key.toLowerCase().includes("date")
+          ? `<input type="date" id="field-${key}" name="${key}" value="${escapeHTML(value)}">`
+          : full
+            ? `<textarea id="field-${key}" name="${key}">${escapeHTML(value)}</textarea>`
+            : `<input id="field-${key}" name="${key}" value="${escapeHTML(value)}" ${["name","domain"].includes(key) ? "required" : ""} ${key === "url" ? 'type="url" placeholder="https://example.com"' : ""}>`;
+        return `<div class="field ${full}"><label for="field-${key}">${escapeHTML(label)}</label>${input}</div>`;
+      }).join("");
+    }
+
+    drawFields(currentSection);
+    document.getElementById("recordCategory").addEventListener("change", event => {
+      drawFields(event.target.value);
+    });
+    document.getElementById("recordModal").classList.add("open");
+    const first = document.querySelector("#dynamicFields input, #dynamicFields textarea");
+    if (first) first.focus();
+  }
+
+  function closeModal() {
+    document.getElementById("recordModal").classList.remove("open");
+    editingId = null;
+  }
+
+  function exportCSV() {
+    const config = categories[currentSection];
+    const fields = [...config.fields, ["status","Verification Status"]];
+    const rows = getSectionRecords(currentSection);
+    if (!rows.length) {
+      showToast("There are no records in this section to export yet.");
+      return;
+    }
+    const csvCell = value => `"${String(value ?? "").replace(/"/g,'""')}"`;
+    const csv = [
+      fields.map(f => csvCell(f[1])).join(","),
+      ...rows.map(record => fields.map(([key]) => csvCell(record[key])).join(","))
+    ].join("\r\n");
+    const blob = new Blob(["\uFEFF" + csv], {type:"text/csv;charset=utf-8;"});
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = currentSection + "-records.csv";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    showToast("CSV export started.");
+  }
+
+  // Dashboard stat cards open their matching section (order matches the four cards).
+  const cardTargets = ["companies", "user-types", "licenses", "documentation"];
+  document.querySelectorAll(".cards .stat-card").forEach((card, index) => {
+    const go = () => openSection(cardTargets[index]);
+    card.classList.add("clickable");
+    card.tabIndex = 0;
+    card.setAttribute("role", "button");
+    card.addEventListener("click", go);
+    card.addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        go();
+      }
+    });
+  });
+
+  // "Records by Section" rows open their section (rows are re-rendered, so delegate).
+  const openFromChart = event => {
+    const row = event.target.closest("[data-open]");
+    if (row) openSection(row.dataset.open);
+  };
+  document.getElementById("departmentChart").addEventListener("click", openFromChart);
+  document.getElementById("departmentChart").addEventListener("keydown", event => {
+    if ((event.key === "Enter" || event.key === " ") && event.target.closest("[data-open]")) {
+      event.preventDefault();
+      openFromChart(event);
+    }
+  });
+
+  document.getElementById("mainNav").addEventListener("click", event => {
+    const button = event.target.closest(".nav-link");
+    if (!button) return;
+    if (button.dataset.target === "dashboard") showDashboard();
+    else openSection(button.dataset.target);
+  });
+
+  document.getElementById("sectionAdd").addEventListener("click", () => openModal());
+  document.getElementById("closeModal").addEventListener("click", closeModal);
+  document.getElementById("cancelModal").addEventListener("click", closeModal);
+  document.getElementById("recordModal").addEventListener("click", event => {
+    if (event.target.id === "recordModal") closeModal();
+  });
+  document.getElementById("searchInput").addEventListener("input", renderTable);
+  document.getElementById("statusFilter").addEventListener("change", renderTable);
+  document.getElementById("exportBtn").addEventListener("click", exportCSV);
+
+  document.getElementById("tableBody").addEventListener("click", event => {
+    const button = event.target.closest("button[data-action]");
+    if (!button) return;
+    const id = button.dataset.id;
+    if (button.dataset.action === "edit") {
+      openModal(id);
+    } else if (button.dataset.action === "delete") {
+      const record = records.find(r => r.id === id);
+      if (!record) return;
+      if (confirm(`Delete "${record.name || record.domain || "this record"}"? This cannot be undone.`)) {
+        records = records.filter(r => r.id !== id);
+        if (saveRecords()) {
+          renderTable();
+          showToast("Record deleted.");
+        }
+      }
+    }
+  });
+
+  document.getElementById("recordForm").addEventListener("submit", event => {
+    event.preventDefault();
+    const section = document.getElementById("recordCategory").value;
+    const values = {};
+    categories[section].fields.forEach(([key]) => {
+      const input = document.querySelector(`#dynamicFields [name="${key}"]`);
+      values[key] = input ? input.value.trim() : "";
+    });
+    const status = document.getElementById("recordStatus").value;
+
+    if (!values.name && !values.domain) {
+      showToast("Please enter a name or domain.");
+      return;
+    }
+
+    if (values.url && safeURL(values.url) === "#") {
+      showToast("Please enter a valid HTTP or HTTPS URL.");
+      return;
+    }
+
+    if (editingId) {
+      const index = records.findIndex(r => r.id === editingId);
+      if (index >= 0) records[index] = {...records[index], ...values, status};
+    } else {
+      records.push({
+        id: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random()),
+        category:section, ...values, status,
+        createdAt:new Date().toISOString()
+      });
+    }
+
+    if (saveRecords()) {
+      closeModal();
+      if (document.getElementById("sectionView").hidden) openSection(section);
+      else if (currentSection !== section) openSection(section);
+      else renderTable();
+      showToast(editingId ? "Record updated." : "Record saved.");
+    }
+  });
+  
+/* ===== Uploaded files: Documentation Status only ===== */
+const uploadBtn = document.getElementById("chooseUploadBtn");
+const fileInput = document.getElementById("fileInput");
+const filesPanel = document.getElementById("uploadedFilesPanel");
+const filesList = document.getElementById("documentUploadedList");
+const uploadStatus = document.getElementById("documentUploadStatus");
+
+const FILE_DB_NAME = "company-it-uploaded-files";
+const FILE_STORE_NAME = "files";
+
+function openFileDatabase() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(FILE_DB_NAME, 1);
+
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains(FILE_STORE_NAME)) {
+        db.createObjectStore(FILE_STORE_NAME, { keyPath: "id" });
+      }
+    };
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+async function saveUploadedFile(file) {
+  const db = await openFileDatabase();
+
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(FILE_STORE_NAME, "readwrite");
+    const id = crypto.randomUUID
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random()}`;
+
+    tx.objectStore(FILE_STORE_NAME).put({
+      id,
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      blob: file,
+      uploadedAt: new Date().toISOString()
+    });
+
+    tx.oncomplete = () => {
+      db.close();
+      resolve();
+    };
+
+    tx.onerror = () => {
+      db.close();
+      reject(tx.error);
+    };
+  });
+}
+
+async function getUploadedFiles() {
+  const db = await openFileDatabase();
+
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(FILE_STORE_NAME, "readonly");
+    const request = tx.objectStore(FILE_STORE_NAME).getAll();
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+
+    tx.oncomplete = () => db.close();
+    tx.onerror = () => {
+      db.close();
+      reject(tx.error);
+    };
+  });
+}
+
+function formatFileSize(bytes) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) {
+    return `${(bytes / 1024).toFixed(1)} KB`;
+  }
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+}
+
+function getFileIcon(file) {
+  const name = file.name.toLowerCase();
+  const type = file.type || "";
+
+  if (type.startsWith("image/")) return "🖼️";
+  if (type === "application/pdf" || name.endsWith(".pdf")) return "📕";
+  if (/\.(doc|docx)$/.test(name)) return "📝";
+  if (/\.(xls|xlsx|csv)$/.test(name)) return "📊";
+  if (/\.(ppt|pptx)$/.test(name)) return "📽️";
+  if (type.startsWith("text/") || name.endsWith(".txt")) return "📄";
+
+  return "📁";
+}
+
+async function deleteUploadedFile(id) {
+  const db = await openFileDatabase();
+
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(
+      FILE_STORE_NAME,
+      "readwrite"
+    );
+
+    transaction.objectStore(FILE_STORE_NAME).delete(id);
+
+    transaction.oncomplete = () => {
+      db.close();
+      resolve();
+    };
+
+    transaction.onerror = () => {
+      db.close();
+      reject(transaction.error);
+    };
+  });
+}
+
+async function renderUploadedFiles() {
+  if (!filesList) return;
+
+  try {
+    const files = await getUploadedFiles();
+    filesList.replaceChildren();
+
+    if (!files.length) {
+      const empty = document.createElement("div");
+      empty.className = "uploaded-files-empty";
+      empty.textContent = "No files uploaded yet.";
+      filesList.appendChild(empty);
+      return;
+    }
+
+    files.sort((a, b) =>
+      new Date(b.uploadedAt) - new Date(a.uploadedAt)
+    );
+
+    files.forEach(file => {
+      const card = document.createElement("div");
+      card.className = "uploaded-file";
+
+      const icon = document.createElement("div");
+      icon.className = "uploaded-file-icon";
+      icon.textContent = getFileIcon(file);
+
+      const info = document.createElement("div");
+      info.className = "uploaded-file-info";
+
+      const nameButton = document.createElement("button");
+      nameButton.type = "button";
+      nameButton.className = "uploaded-file-name";
+      nameButton.textContent = file.name;
+      nameButton.title = "Open or download " + file.name;
+
+      nameButton.addEventListener("click", () => {
+        const url = URL.createObjectURL(file.blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = file.name;
+        link.target = "_blank";
+        link.rel = "noopener";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
+      });
+
+      const meta = document.createElement("div");
+      meta.className = "uploaded-file-meta";
+      meta.textContent =
+        `${formatFileSize(file.size)} · ${file.type || "Unknown file type"}`;
+
+      
+const deleteButton = document.createElement("button");
+deleteButton.type = "button";
+deleteButton.className = "action-btn delete";
+deleteButton.textContent = "Delete";
+
+deleteButton.addEventListener("click", async () => {
+  const confirmed = confirm(
+    `Are you sure you want to delete "${file.name}"?`
+  );
+
+  if (!confirmed) return;
+
+  deleteButton.disabled = true;
+
+  try {
+    await deleteUploadedFile(file.id);
+    await renderUploadedFiles();
+
+    if (uploadStatus) {
+      uploadStatus.textContent = "File deleted successfully.";
+    }
+  } catch (error) {
+    deleteButton.disabled = false;
+
+    if (uploadStatus) {
+      uploadStatus.textContent = "Could not delete the file.";
+    }
+  }
+});
+
+info.append(nameButton, meta);
+card.append(icon, info, deleteButton);
+filesList.appendChild(card);
+
+    });
+  } catch (error) {
+    if (uploadStatus) {
+      uploadStatus.textContent =
+        "Could not load files. Please check browser storage.";
+    }
+  }
+}
+
+if (uploadBtn && fileInput && filesPanel) {
+  uploadBtn.addEventListener("click", () => fileInput.click());
+
+  fileInput.addEventListener("change", async event => {
+    const selectedFiles = Array.from(event.target.files || []);
+    if (!selectedFiles.length) return;
+
+    uploadBtn.disabled = true;
+    uploadStatus.textContent = "Saving files...";
+
+    let saved = 0;
+
+    try {
+      for (const file of selectedFiles) {
+        await saveUploadedFile(file);
+        saved++;
+      }
+
+      await renderUploadedFiles();
+      uploadStatus.textContent =
+        `${saved} file(s) uploaded successfully.`;
+    } catch (error) {
+      uploadStatus.textContent =
+        `${saved} file(s) saved. Some files could not be saved.`;
+    } finally {
+      uploadBtn.disabled = false;
+      fileInput.value = "";
+    }
+  });
+} 
+const dropzone = document.getElementById("dropzone");
+
+if (dropzone && fileInput && uploadBtn) {
+  ["dragenter", "dragover"].forEach(eventName => {
+    dropzone.addEventListener(eventName, event => {
+      event.preventDefault();
+      dropzone.classList.add("drag-over");
+    });
+  });
+
+  ["dragleave", "drop"].forEach(eventName => {
+    dropzone.addEventListener(eventName, event => {
+      event.preventDefault();
+      dropzone.classList.remove("drag-over");
+    });
+  });
+
+  dropzone.addEventListener("drop", event => {
+    const droppedFiles = Array.from(
+      event.dataTransfer?.files || []
+    );
+
+    if (!droppedFiles.length || uploadBtn.disabled) return;
+
+    const transfer = new DataTransfer();
+
+    droppedFiles.forEach(file => transfer.items.add(file));
+
+    fileInput.files = transfer.files;
+    fileInput.dispatchEvent(
+      new Event("change", { bubbles: true })
+    );
+  });
+}
+
+
+/* Remove old upload entries from the records table and CSV. */
+const oldUploadCount = records.length;
+
+records = records.filter(record =>
+  !(record.category === "documentation" &&
+    record.source === "Uploaded file")
+);
+
+if (records.length !== oldUploadCount) {
+  saveRecords();
+}
+
+  document.getElementById("currentYear").textContent = new Date().getFullYear();
+  showDashboard();
+
+  const intro = document.getElementById("introScreen");
+  const hideIntro = () => {
+    if (!intro) return;
+    intro.classList.add("is-hidden");
+    setTimeout(() => intro.remove(), 700);
+  };
+  window.addEventListener("load", () => setTimeout(hideIntro, 5000), {once:true});
+  setTimeout(hideIntro, 5000);
+})();
+</script>
+</body>     
+</html>
