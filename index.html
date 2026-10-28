@@ -518,9 +518,13 @@ tbody tr:hover {background:#FAFCFB}
   const STORAGE_KEY = "company-it-requirements-records-v1";
   const categories = {
     "companies": {
-      title:"Company Directory",
-      description:"Company names, departments, contacts, and verification details.",
-      fields:[["name","Company Name"],["department","Department"],["contact","Contact Person"],["email","Contact Email"],["notes","Notes"]]
+  title: "Company Directory",
+      description: "Centralized reference for supported companies.",
+      fields: [
+        ["name", "Company Name"],
+        ["url", "Website"],
+        ["notes", "Notes"]
+      ]
     },
     "user-types": {
       title:"User Types",
@@ -553,10 +557,10 @@ tbody tr:hover {background:#FAFCFB}
       fields:[["name","System / Resource"],["role","Access Role"],["approval","Approval Required"],["owner","Approver / Owner"],["requirements","Requirements"],["notes","Notes"]]
     },
     "documentation": {
-      title:"Documentation Status",
-      description:"Track required documentation and verification progress.",
-      fields:[["name","Document / Requirement"],["owner","Responsible Person / Team"],["source","Source / Reference"],["dueDate","Due Date"],["notes","Notes"]]
-    }
+      title: "Documentation Status",
+      description: "Track required documentation and verification progress.",
+      fields: [["name","Document / Requirement"],["owner","Responsible Person / Team"],["source","Source / Reference"],["notes","Notes"]]
+    },
   };
 
   let records = loadRecords();
