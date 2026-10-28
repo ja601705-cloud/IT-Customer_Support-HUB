@@ -195,6 +195,140 @@ tbody tr:hover {background:#FAFCFB}
 @media(prefers-reduced-motion:reduce) {
   *,*::before,*::after {animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
 }
+/* Uploaded Files - Documentation Status */
+.uploaded-files-panel {
+  margin-top: 22px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #FAFCFB;
+}
+
+.uploaded-files-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.uploaded-files-heading h3 {
+  margin: 0 0 5px;
+  font-size: 15px;
+}
+
+.uploaded-files-heading p,
+.upload-status {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.uploaded-files-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 12px;
+}
+
+.uploaded-file {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 14px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.uploaded-file-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 11px;
+  background: var(--blue-light);
+  color: var(--blue);
+  font-size: 21px;
+}
+
+.uploaded-file-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.uploaded-file-name {
+  display: block;
+  width: 100%;
+  overflow-wrap: anywhere;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--blue);
+  text-align: left;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.uploaded-file-name:hover {
+  text-decoration: underline;
+}
+
+.uploaded-file-meta {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.upload-status {
+  margin-top: 12px;
+}
+
+.uploaded-files-empty {
+  grid-column: 1 / -1;
+  padding: 22px;
+  text-align: center;
+  color: var(--muted);
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  background: white;
+} 
+
+/* File Upload - Drag and Drop */
+.dropzone {
+  border: 2px dashed #B8C9F5;
+  border-radius: 14px;
+  padding: 30px 20px;
+  text-align: center;
+  background: #F7F9FF;
+  transition: background .2s, border-color .2s;
+}
+
+.dropzone.drag-over {
+  background: #EEF3FF;
+  border-color: var(--blue);
+}
+
+.dropzone-icon {
+  font-size: 36px;
+  color: var(--blue);
+  margin-bottom: 10px;
+}
+
+.dropzone h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  color: var(--text);
+}
+
+.dropzone p {
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
 </style>
 </body>
 <div id="introScreen" class="intro-screen" role="status" aria-live="polite">
@@ -299,27 +433,8 @@ tbody tr:hover {background:#FAFCFB}
               <option value="Pending">Pending</option>
             </select>
             <button class="secondary" id="exportBtn">Export CSV</button>
+           
           </div>
-          <div class="table-wrap">
-
-
-  <input
-    type="file"
-    id="documentFileInput"
-    multiple
-    style="display:block; margin:15px 0;"
-  >
-
-  <button type="button" class="primary"
-          id="chooseUploadBtn">
-    رفع الملفات
-  </button>
-
-  <p id="documentUploadStatus"
-     style="margin-top:12px;"></p>
-
-  <div id="documentUploadedList"></div>
-</div>
 
             <table>
               <thead id="tableHead"></thead>
@@ -328,6 +443,45 @@ tbody tr:hover {background:#FAFCFB}
             <div id="emptyState" class="empty" hidden><strong>No records found</strong>Add a record or change your search and filters.</div>
           </div>
           <div class="result-count" id="resultCount"></div>
+
+<section id="uploadedFilesPanel" class="uploaded-files-panel" hidden>
+  <div class="uploaded-files-heading">
+    <div>
+      <h3>Uploaded Documents</h3>
+      <p>Your uploaded files, organized in one place.</p>
+    </div>
+    <span id="uploadCount" class="badge pending">0 files</span>
+  </div>
+
+  <div id="dropzone" class="dropzone">
+    <div class="dropzone-icon">⇧</div>
+    <h3>Drag and drop your files here</h3>
+    <p>Or choose files from your device.</p>
+
+    <button type="button" class="primary" id="chooseUploadBtn">
+      Choose Files
+    </button>
+
+    <input
+      type="file"
+      id="fileInput"
+      multiple
+      hidden
+    >
+  </div>
+
+  <div id="documentUploadedList" class="uploaded-files-list">
+    <div class="uploaded-files-empty">
+      No files selected yet.
+    </div>
+  </div>
+
+  <p id="documentUploadStatus" class="upload-status" aria-live="polite">
+    Selected files are available during this page session only.
+  </p>
+</section>
+
+
 
         </div>
 
@@ -364,9 +518,13 @@ tbody tr:hover {background:#FAFCFB}
   const STORAGE_KEY = "company-it-requirements-records-v1";
   const categories = {
     "companies": {
-      title:"Company Directory",
-      description:"Company names, departments, contacts, and verification details.",
-      fields:[["name","Company Name"],["department","Department"],["contact","Contact Person"],["email","Contact Email"],["notes","Notes"]]
+  title: "Company Directory",
+      description: "Centralized reference for supported companies.",
+      fields: [
+        ["name", "Company Name"],
+        ["url", "Website"],
+        ["notes", "Notes"]
+      ]
     },
     "user-types": {
       title:"User Types",
@@ -399,10 +557,10 @@ tbody tr:hover {background:#FAFCFB}
       fields:[["name","System / Resource"],["role","Access Role"],["approval","Approval Required"],["owner","Approver / Owner"],["requirements","Requirements"],["notes","Notes"]]
     },
     "documentation": {
-      title:"Documentation Status",
-      description:"Track required documentation and verification progress.",
-      fields:[["name","Document / Requirement"],["owner","Responsible Person / Team"],["source","Source / Reference"],["dueDate","Due Date"],["notes","Notes"]]
-    }
+      title: "Documentation Status",
+      description: "Track required documentation and verification progress.",
+      fields: [["name","Document / Requirement"],["owner","Responsible Person / Team"],["source","Source / Reference"],["notes","Notes"]]
+    },
   };
 
   let records = loadRecords();
@@ -438,6 +596,7 @@ tbody tr:hover {background:#FAFCFB}
   function getSectionRecords(section) {
     return records.filter(record => record.category === section);
   }
+  
 
   function showToast(message) {
     const toast = document.getElementById("toast");
@@ -485,7 +644,7 @@ tbody tr:hover {background:#FAFCFB}
   function showDashboard() {
     document.getElementById("dashboard").hidden = false;
     document.getElementById("sectionView").hidden = true;
-    document.getElementById("pageTitle").textContent = "Company IT Requirements Dashboard";
+    document.getElementById("pageTitle").textContent = "IT Customer Support Hub Dashboard";
     document.querySelectorAll(".nav-link").forEach(btn => btn.classList.toggle("active", btn.dataset.target === "dashboard"));
     updateDashboard();
   }
@@ -493,6 +652,8 @@ tbody tr:hover {background:#FAFCFB}
   function openSection(section) {
     if (!categories[section]) return;
     currentSection = section;
+    document.getElementById("uploadedFilesPanel").hidden =
+  section !== "documentation";
     document.getElementById("dashboard").hidden = true;
     document.getElementById("sectionView").hidden = false;
     document.getElementById("pageTitle").textContent = categories[section].title;
@@ -722,6 +883,302 @@ tbody tr:hover {background:#FAFCFB}
       showToast(editingId ? "Record updated." : "Record saved.");
     }
   });
+  
+/* ===== Uploaded files: Documentation Status only ===== */
+const uploadBtn = document.getElementById("chooseUploadBtn");
+const fileInput = document.getElementById("fileInput");
+const filesPanel = document.getElementById("uploadedFilesPanel");
+const filesList = document.getElementById("documentUploadedList");
+const uploadStatus = document.getElementById("documentUploadStatus");
+
+const FILE_DB_NAME = "company-it-uploaded-files";
+const FILE_STORE_NAME = "files";
+
+function openFileDatabase() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(FILE_DB_NAME, 1);
+
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains(FILE_STORE_NAME)) {
+        db.createObjectStore(FILE_STORE_NAME, { keyPath: "id" });
+      }
+    };
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+async function saveUploadedFile(file) {
+  const db = await openFileDatabase();
+
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(FILE_STORE_NAME, "readwrite");
+    const id = crypto.randomUUID
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random()}`;
+
+    tx.objectStore(FILE_STORE_NAME).put({
+      id,
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      blob: file,
+      uploadedAt: new Date().toISOString()
+    });
+
+    tx.oncomplete = () => {
+      db.close();
+      resolve();
+    };
+
+    tx.onerror = () => {
+      db.close();
+      reject(tx.error);
+    };
+  });
+}
+
+async function getUploadedFiles() {
+  const db = await openFileDatabase();
+
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(FILE_STORE_NAME, "readonly");
+    const request = tx.objectStore(FILE_STORE_NAME).getAll();
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+
+    tx.oncomplete = () => db.close();
+    tx.onerror = () => {
+      db.close();
+      reject(tx.error);
+    };
+  });
+}
+
+function formatFileSize(bytes) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) {
+    return `${(bytes / 1024).toFixed(1)} KB`;
+  }
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+}
+
+function getFileIcon(file) {
+  const name = file.name.toLowerCase();
+  const type = file.type || "";
+
+  if (type.startsWith("image/")) return "🖼️";
+  if (type === "application/pdf" || name.endsWith(".pdf")) return "📕";
+  if (/\.(doc|docx)$/.test(name)) return "📝";
+  if (/\.(xls|xlsx|csv)$/.test(name)) return "📊";
+  if (/\.(ppt|pptx)$/.test(name)) return "📽️";
+  if (type.startsWith("text/") || name.endsWith(".txt")) return "📄";
+
+  return "📁";
+}
+
+async function deleteUploadedFile(id) {
+  const db = await openFileDatabase();
+
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(
+      FILE_STORE_NAME,
+      "readwrite"
+    );
+
+    transaction.objectStore(FILE_STORE_NAME).delete(id);
+
+    transaction.oncomplete = () => {
+      db.close();
+      resolve();
+    };
+
+    transaction.onerror = () => {
+      db.close();
+      reject(transaction.error);
+    };
+  });
+}
+
+async function renderUploadedFiles() {
+  if (!filesList) return;
+
+  try {
+    const files = await getUploadedFiles();
+    filesList.replaceChildren();
+
+    if (!files.length) {
+      const empty = document.createElement("div");
+      empty.className = "uploaded-files-empty";
+      empty.textContent = "No files uploaded yet.";
+      filesList.appendChild(empty);
+      return;
+    }
+
+    files.sort((a, b) =>
+      new Date(b.uploadedAt) - new Date(a.uploadedAt)
+    );
+
+    files.forEach(file => {
+      const card = document.createElement("div");
+      card.className = "uploaded-file";
+
+      const icon = document.createElement("div");
+      icon.className = "uploaded-file-icon";
+      icon.textContent = getFileIcon(file);
+
+      const info = document.createElement("div");
+      info.className = "uploaded-file-info";
+
+      const nameButton = document.createElement("button");
+      nameButton.type = "button";
+      nameButton.className = "uploaded-file-name";
+      nameButton.textContent = file.name;
+      nameButton.title = "Open or download " + file.name;
+
+      nameButton.addEventListener("click", () => {
+        const url = URL.createObjectURL(file.blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = file.name;
+        link.target = "_blank";
+        link.rel = "noopener";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
+      });
+
+      const meta = document.createElement("div");
+      meta.className = "uploaded-file-meta";
+      meta.textContent =
+        `${formatFileSize(file.size)} · ${file.type || "Unknown file type"}`;
+
+      
+const deleteButton = document.createElement("button");
+deleteButton.type = "button";
+deleteButton.className = "action-btn delete";
+deleteButton.textContent = "Delete";
+
+deleteButton.addEventListener("click", async () => {
+  const confirmed = confirm(
+    `Are you sure you want to delete "${file.name}"?`
+  );
+
+  if (!confirmed) return;
+
+  deleteButton.disabled = true;
+
+  try {
+    await deleteUploadedFile(file.id);
+    await renderUploadedFiles();
+
+    if (uploadStatus) {
+      uploadStatus.textContent = "File deleted successfully.";
+    }
+  } catch (error) {
+    deleteButton.disabled = false;
+
+    if (uploadStatus) {
+      uploadStatus.textContent = "Could not delete the file.";
+    }
+  }
+});
+
+info.append(nameButton, meta);
+card.append(icon, info, deleteButton);
+filesList.appendChild(card);
+
+    });
+  } catch (error) {
+    if (uploadStatus) {
+      uploadStatus.textContent =
+        "Could not load files. Please check browser storage.";
+    }
+  }
+}
+
+if (uploadBtn && fileInput && filesPanel) {
+  uploadBtn.addEventListener("click", () => fileInput.click());
+
+  fileInput.addEventListener("change", async event => {
+    const selectedFiles = Array.from(event.target.files || []);
+    if (!selectedFiles.length) return;
+
+    uploadBtn.disabled = true;
+    uploadStatus.textContent = "Saving files...";
+
+    let saved = 0;
+
+    try {
+      for (const file of selectedFiles) {
+        await saveUploadedFile(file);
+        saved++;
+      }
+
+      await renderUploadedFiles();
+      uploadStatus.textContent =
+        `${saved} file(s) uploaded successfully.`;
+    } catch (error) {
+      uploadStatus.textContent =
+        `${saved} file(s) saved. Some files could not be saved.`;
+    } finally {
+      uploadBtn.disabled = false;
+      fileInput.value = "";
+    }
+  });
+} 
+const dropzone = document.getElementById("dropzone");
+
+if (dropzone && fileInput && uploadBtn) {
+  ["dragenter", "dragover"].forEach(eventName => {
+    dropzone.addEventListener(eventName, event => {
+      event.preventDefault();
+      dropzone.classList.add("drag-over");
+    });
+  });
+
+  ["dragleave", "drop"].forEach(eventName => {
+    dropzone.addEventListener(eventName, event => {
+      event.preventDefault();
+      dropzone.classList.remove("drag-over");
+    });
+  });
+
+  dropzone.addEventListener("drop", event => {
+    const droppedFiles = Array.from(
+      event.dataTransfer?.files || []
+    );
+
+    if (!droppedFiles.length || uploadBtn.disabled) return;
+
+    const transfer = new DataTransfer();
+
+    droppedFiles.forEach(file => transfer.items.add(file));
+
+    fileInput.files = transfer.files;
+    fileInput.dispatchEvent(
+      new Event("change", { bubbles: true })
+    );
+  });
+}
+
+
+/* Remove old upload entries from the records table and CSV. */
+const oldUploadCount = records.length;
+
+records = records.filter(record =>
+  !(record.category === "documentation" &&
+    record.source === "Uploaded file")
+);
+
+if (records.length !== oldUploadCount) {
+  saveRecords();
+}
 
   document.getElementById("currentYear").textContent = new Date().getFullYear();
   showDashboard();
