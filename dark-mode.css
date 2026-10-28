@@ -1,0 +1,111 @@
+
+/* ===== Blue theme: Light and Dark ===== */
+
+/* Light mode */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #EEF3FF;
+  --white: #FFFFFF;
+  --text: #1B2A4A;
+  --muted: #5B6E91;
+  --sub: #34496E;
+  --border: #D3DEF5;
+
+  --blue: #1E40AF;
+  --blue-dark: #1E40AF;
+  --blue-light: #E3EBFF;
+
+  --green: #1F5FC4;
+  --green-light: #DDEFFF;
+  --red: #C2414B;
+  --red-light: #FFECEF;
+  --amber: #A96D12;
+  --amber-light: #FFF3D6;
+
+  --row-hover: #F3F7FF;
+  --thead: #E9F0FF;
+  --input-bg: #FFFFFF;
+  --chip-bg: #E3EBFF;
+  --track: #E3EBFF;
+}
+
+/* Dark mode */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #0B1A3A;
+  --white: #13274F;
+  --text: #E8EEFF;
+  --muted: #9DB0D6;
+  --sub: #C6D4F2;
+  --border: #223D70;
+
+  --blue: #5B8DFF;
+  --blue-dark: #3E6FE0;
+  --blue-light: #1A3366;
+
+  --green: #7FB8FF;
+  --green-light: #172F5C;
+  --red: #FF8A94;
+  --red-light: #3A1A2A;
+  --amber: #F5C26B;
+  --amber-light: #3A2D12;
+
+  --row-hover: #183266;
+  --thead: #102550;
+  --input-bg: #0B1A3A;
+  --chip-bg: #1A3366;
+  --track: #1A3366;
+}
+
+/* Apply theme colors to the page */
+body {
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+/* Dashboard row hover */
+:root[data-theme="dark"] .chart-row.dash-link:hover span {
+  color: var(--blue);
+}
+
+:root[data-theme="light"] .chart-row.dash-link:hover span {
+  color: var(--blue-dark);
+}
+
+/* Floating Dark Mode Button */
+.theme-toggle {
+  position: fixed;
+  right: 22px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10000;
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  border: 1px solid var(--border, #D8E7DF);
+  border-radius: 50%;
+  background: var(--white, #FFFFFF);
+  color: var(--text, #17243B);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 23px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px #0003;
+  transition: transform 0.2s ease;
+}
+
+.theme-toggle:hover {
+  transform: translateY(-50%) scale(1.08);
+}
+
+@media (max-width: 720px) {
+  .theme-toggle {
+    right: 12px;
+    width: 46px;
+    height: 46px;
+  }
+}
+/* ===== Blue theme: dark and light share the same blue family ===== */
